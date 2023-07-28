@@ -1,0 +1,17 @@
+{
+  "name": "json-cloak",
+  "version": "1.0.0",
+  "description": "Replace UUIDs in your JSON files",
+  "main": "dist/index.js",
+  "repository": "https://github.com/Ilya-Meer/json-cloak.git",
+  "author": "Ilya Meerovich <ilya.meerov@gmail.com>",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+    "typescript": "^5.1.6"
+  },
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit"
+  }
+}

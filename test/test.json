@@ -1,0 +1,10 @@
+{
+  "id": "80b96ced-ad77-4a9a-b758-a04e5988d093",
+  "nested": {
+    "id": "5c7c4f59-b972-4488-b90a-4064056d6f02",
+    "nonUUID": "foobar",
+    "deeperNesting": {
+      "bazQuux": "5c7c4f59-b972-4488-b90a-4064056d6f02"
+    }
+  }
+}

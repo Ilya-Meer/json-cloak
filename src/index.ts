@@ -35,7 +35,7 @@ const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}
  * @returns {JsonLike} The transformed value.
  * @throws {Error} If JSON parsing fails or invalid input is provided.
  */
-export default function cloak(value: JsonLike, options?: CloakOptions): JsonLike {
+export function cloak(value: JsonLike, options?: CloakOptions): JsonLike {
   try {
     const idMap: IdMap = {}
     const jsonValue = validate(value)

@@ -3,7 +3,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import minimist from 'minimist'
-import cloak from '.'
+import { cloak } from '.'
 
 type Args = { [key: string]: string | boolean }
 

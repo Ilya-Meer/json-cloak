@@ -1,24 +1,24 @@
 #!/usr/bin/env node
 
-import fs from 'node:fs'
-import path from 'node:path'
-import minimist from 'minimist'
-import { cloak } from '.'
+import fs from "node:fs";
+import path from "node:path";
+import minimist from "minimist";
+import { cloak } from ".";
 
-type Args = { [key: string]: string | boolean }
+type Args = { [key: string]: string | boolean };
 
 const supportedOptions = [
-  'f',
-  'file',
-  'i',
-  'in-place',
-  'k',
-  'keys',
-  'v',
-  'version',
-  'h',
-  'help'
-]
+  "f",
+  "file",
+  "i",
+  "in-place",
+  "k",
+  "keys",
+  "v",
+  "version",
+  "h",
+  "help",
+];
 
 export const usage = `
 Replace UUIDs in your JSON files
@@ -33,45 +33,49 @@ Options:
   -v, --version     Display the version number
   -h, --help        Show this help
 
-`
+`;
 /**
  * The main function that runs the CLI tool.
  * Parses command-line arguments, displays help/version info, and invokes the transformation process.
  * @returns {Promise<void>}
  */
 export async function main(): Promise<void> {
-  const args = parseArguments()
+  const args = parseArguments();
 
   // Display usage
   if (Object.keys(args).length === 1 || args.h || args.help) {
-    process.stdout.write(usage)
-    return
+    process.stdout.write(usage);
+    return;
   }
 
   // Display version
   if (args.v || args.version) {
-    const version = await getVersion()
-    process.stdout.write(version)
-    return
+    const version = await getVersion();
+    process.stdout.write(version);
+    return;
   }
 
-  const shouldDisplayKeys = args.k || args.keys
-  const shouldReplaceFile = args.i || args['in-place']
-  const file = args.f || args.file
+  const shouldDisplayKeys = args.k || args.keys;
+  const shouldReplaceFile = args.i || args["in-place"];
+  const file = args.f || args.file;
 
-  if (typeof file !== 'string') {
-    throw new Error('The `-f, --file` option was either not used or no file argument was passed in.')
+  if (typeof file !== "string") {
+    throw new Error(
+      "The `-f, --file` option was either not used or no file argument was passed in."
+    );
   }
 
   if (shouldDisplayKeys && shouldReplaceFile) {
-    throw new Error('The provided options will overwrite file with replaced keys. Aborting operation.')
+    throw new Error(
+      "The provided options will overwrite file with replaced keys. Aborting operation."
+    );
   }
 
   void transformJSON({
     file,
     shouldReplaceFile: shouldReplaceFile as boolean,
-    shouldDisplayKeys: shouldDisplayKeys as boolean
-  })
+    shouldDisplayKeys: shouldDisplayKeys as boolean,
+  });
 }
 
 /**
@@ -79,17 +83,22 @@ export async function main(): Promise<void> {
  * @returns {Args} The parsed command-line arguments.
  */
 export function parseArguments(): Args {
-  const args = minimist(process.argv.slice(2))
+  const args = minimist(process.argv.slice(2));
+  console.log("🚀 ~ file: cli.ts:87 ~ parseArguments ~ args:", args);
 
   // Check for unsupported options
-  const unsupportedOptions = Object.keys(args).filter((option) => !supportedOptions.includes(option) && option !== '_')
+  const unsupportedOptions = Object.keys(args).filter(
+    (option) => !supportedOptions.includes(option) && option !== "_"
+  );
 
   if (unsupportedOptions.length > 0) {
-    const errorMessage = `Error: Unsupported arguments: ${unsupportedOptions.join(', ')}`
-    throw new Error(errorMessage)
+    const errorMessage = `Error: Unsupported arguments: ${unsupportedOptions.join(
+      ", "
+    )}`;
+    throw new Error(errorMessage);
   }
 
-  return args
+  return args;
 }
 
 /**
@@ -98,12 +107,14 @@ export function parseArguments(): Args {
  */
 export async function getVersion(): Promise<string> {
   try {
-    const pkgPath = path.join(__dirname, '..', 'package.json')
-    const content = await getFileContents(pkgPath)
-    return (JSON.parse(content) as { version: string }).version
+    const pkgPath = path.join(__dirname, "..", "package.json");
+    const content = await getFileContents(pkgPath);
+    return (JSON.parse(content) as { version: string }).version;
   } catch (err: unknown) {
-    const errorMessage = `Error retrieving package version: ${(err as Error).message}`
-    throw new Error(errorMessage)
+    const errorMessage = `Error retrieving package version: ${
+      (err as Error).message
+    }`;
+    throw new Error(errorMessage);
   }
 }
 
@@ -119,18 +130,25 @@ export async function transformJSON({
   shouldReplaceFile,
   shouldDisplayKeys,
 }: {
-  file: string
-  shouldReplaceFile: boolean
-  shouldDisplayKeys: boolean
+  file: string;
+  shouldReplaceFile: boolean;
+  shouldDisplayKeys: boolean;
 }): Promise<void> {
-  const content = await getFileContents(file)
-  const transformedContent = JSON.stringify(cloak(content, { keys: shouldDisplayKeys }), null, 2)
+  const content = await getFileContents(file);
+  const transformedContent = JSON.stringify(
+    cloak(content, { keys: shouldDisplayKeys }),
+    null,
+    2
+  );
 
   if (shouldReplaceFile) {
-    void fs.promises.writeFile(path.resolve(__dirname, file), transformedContent)
+    void fs.promises.writeFile(
+      path.resolve(__dirname, file),
+      transformedContent
+    );
   }
 
-  process.stdout.write(transformedContent)
+  process.stdout.write(transformedContent);
 }
 
 /**
@@ -139,12 +157,13 @@ export async function transformJSON({
  * @returns {Promise<string>} The contents of the file as a string.
  */
 export async function getFileContents(file: string): Promise<string> {
-  const filePath = path.resolve(__dirname, file)
-  return await fs.promises.readFile(filePath, 'utf-8')
+  const filePath = path.resolve(__dirname, file);
+  return await fs.promises.readFile(filePath, "utf-8");
 }
 
-main()
-  .catch((err: Error) => {
-    process.stdout.write(err.message)
-    process.exit(1)
-  })
+// Will have to move the main function call outside of the module for testing purposes.
+
+// main().catch((err: Error) => {
+//   process.stdout.write(err.message);
+//   process.exit(1);
+// });

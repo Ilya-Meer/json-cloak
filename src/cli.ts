@@ -142,9 +142,3 @@ export async function getFileContents(file: string): Promise<string> {
   const filePath = path.resolve(__dirname, file)
   return await fs.promises.readFile(filePath, 'utf-8')
 }
-
-main()
-  .catch((err: Error) => {
-    process.stdout.write(err.message)
-    process.exit(1)
-  })

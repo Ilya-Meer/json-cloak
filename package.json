@@ -9,7 +9,7 @@
   ],
   "main": "dist/index.js",
   "bin": {
-    "cloak": "dist/cli.js"
+    "cloak": "dist/bin.js"
   },
   "repository": "https://github.com/Ilya-Meer/json-cloak.git",
   "author": "Ilya Meerovich <ilya.meerov@gmail.com>",

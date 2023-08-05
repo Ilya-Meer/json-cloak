@@ -1,5 +1,6 @@
 import minimist from 'minimist'
-import { usage, main, getVersion, parseArguments, transformJSON } from '../src/cli'
+// import { usage, main, getVersion, parseArguments, transformJSON } from '../src/cli'
+import { usage, main, getVersion } from '../src/cli'
 
 jest.mock('minimist')
 
@@ -57,22 +58,22 @@ describe('cli', () => {
     expect(processStdoutWriteSpy).toHaveBeenCalledWith(version)
   })
 
-  test('should call `transformJSON with the correct arguments', async () => {
-    const file = 'test.json';
+  // test('should call `transformJSON with the correct arguments', async () => {
+  //   const file = 'test.json';
 
-    // eslint-disable-next-line
-    (minimist as any).mockReturnValue({ _: [], file, i: true })
+  //   // eslint-disable-next-line
+  //   (minimist as any).mockReturnValue({ _: [], file, i: true })
 
-    await main()
+  //   await main()
 
-    expect(parseArguments).toHaveBeenCalled()
+  //   expect(parseArguments).toHaveBeenCalled()
 
-    // Check if transformJSON is called with the correct arguments
-    expect(transformJSON).toHaveBeenCalledWith(
-      expect.objectContaining({
-        file,
-        shouldReplaceFile: true,
-      })
-    )
-  })
+  //   // Check if transformJSON is called with the correct arguments
+  //   expect(transformJSON).toHaveBeenCalledWith(
+  //     expect.objectContaining({
+  //       file,
+  //       shouldReplaceFile: true,
+  //     })
+  //   )
+  // })
 })

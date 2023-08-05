@@ -1,6 +1,6 @@
 {
   "name": "json-cloak",
-  "version": "0.0.6",
+  "version": "1.0.0",
   "description": "Replace UUIDs in your JSON files",
   "keywords": [
     "JSON",

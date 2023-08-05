@@ -1,6 +1,6 @@
 {
   "name": "json-cloak",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Replace UUIDs in your JSON files",
   "keywords": [
     "JSON",
@@ -11,6 +11,9 @@
   "bin": {
     "cloak": "dist/bin.js"
   },
+  "files": [
+    "dist"
+  ],
   "repository": "https://github.com/Ilya-Meer/json-cloak.git",
   "author": "Ilya Meerovich <ilya.meerov@gmail.com>",
   "license": "MIT",

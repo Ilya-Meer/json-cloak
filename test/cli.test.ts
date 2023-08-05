@@ -1,19 +1,17 @@
-import minimist from './__mocks__/minimist';
+import minimist from "./__mocks__/minimist";
 import {  main, parseArguments  } from '../src/cli'
-
-// To avoid any hoisting problems with the test, we can first import the module, then mock the module, and with different tests, we can then mock the module with different values.
-
-jest.mock("minimist", () => ({
-  __esModule: true,
-  default: jest.fn(),
-}));
 
 describe("cli", () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
-
+  
   test("should display help message when no options provided", async () => {
+    // Mock the minimist function
+    minimist.mockReturnValue({
+      _: [],
+    });
+
     const processStdoutWriteSpy = jest.spyOn(process.stdout, "write");
     // Call the main function with no arguments
     await main();
@@ -26,11 +24,24 @@ describe("cli", () => {
       expect.stringContaining("Replace UUIDs in your JSON files")
     );
   });
+});
 
-  test("should parse valid arguments", () => {
-    const args = parseArguments();
+describe("parseArguments", () => {
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
 
-    expect(minimist).toHaveBeenCalled();
-    expect(args).toEqual({ _: [], v: true, h: false });
-  });
+    test('should parse valid arguments', () => {
+      // Mock the minimist function
+      minimist.mockReturnValue({
+        _: [],
+        v: true,
+        h: false,
+      });
+
+      const args = parseArguments();
+
+      expect(minimist).toHaveBeenCalled();
+      expect(args).toEqual({ _: [], v: true, h: false });
+    });
 });

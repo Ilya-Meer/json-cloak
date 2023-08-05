@@ -84,7 +84,6 @@ export async function main(): Promise<void> {
  */
 export function parseArguments(): Args {
   const args = minimist(process.argv.slice(2));
-  console.log("🚀 ~ file: cli.ts:87 ~ parseArguments ~ args:", args);
 
   // Check for unsupported options
   const unsupportedOptions = Object.keys(args).filter(
@@ -161,9 +160,8 @@ export async function getFileContents(file: string): Promise<string> {
   return await fs.promises.readFile(filePath, "utf-8");
 }
 
-// Will have to move the main function call outside of the module for testing purposes.
-
-// main().catch((err: Error) => {
-//   process.stdout.write(err.message);
-//   process.exit(1);
-// });
+main()
+  .catch((err: Error) => {
+    process.stdout.write(err.message)
+    process.exit(1)
+  })

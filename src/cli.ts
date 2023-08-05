@@ -125,7 +125,7 @@ export async function transformJSON({
   const transformedContent = JSON.stringify(cloak(content, { keys: shouldDisplayKeys }), null, 2)
 
   if (shouldReplaceFile) {
-    void fs.promises.writeFile(path.resolve(__dirname, file), transformedContent)
+    void fs.promises.writeFile(path.resolve(process.cwd(), file), transformedContent)
   }
 
   process.stdout.write(transformedContent)
@@ -137,6 +137,6 @@ export async function transformJSON({
  * @returns {Promise<string>} The contents of the file as a string.
  */
 export async function getFileContents(file: string): Promise<string> {
-  const filePath = path.resolve(__dirname, file)
+  const filePath = path.resolve(process.cwd(), file)
   return await fs.promises.readFile(filePath, 'utf-8')
 }

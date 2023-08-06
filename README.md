@@ -8,21 +8,26 @@ Replace UUIDs in your JSON files and JS objects with new UUIDs while preserving 
 
 ### Installation
 
-To install `json-cloak` globally as a CLI, use npm:
+The simplest way to use `json-cloak` is to invoke via `npx`:
 
 ```bash
-npm install -g json-cloak
+npx json-cloak [options]
 ```
-or 
+Alternatively, you can install `json-cloak` globally as a CLI:
 
 ```bash
+# npm
+npm install -g json-cloak
+
+# yarn
 yarn global add json-cloak
 ```
+**Note**: The npm package name is `json-cloak`, however the globally installed binary name is just `cloak`
 
 ### Command
 
 ```
-json-cloak [options]
+cloak [options]
 ```
 
 #### Options
@@ -38,19 +43,19 @@ json-cloak [options]
 1. Update the JSON file in place with the transformed content:
 
 ```bash
-json-cloak -i -f data.json
+cloak -i -f data.json
 ```
 
 2. Display the keys that would be replaced for the given JSON file:
 
 ```bash
-json-cloak -k -f data.json
+cloak -k -f data.json
 ```
 
 3. Display version info:
 
 ```bash
-json-cloak -v
+cloak -v
 ```
 
 ## Library Usage

@@ -41,6 +41,7 @@
     "test": "NODE_ENV=test jest --coverage"
   },
   "dependencies": {
+    "glob": "^10.3.3",
     "minimist": "^1.2.8",
     "uuid": "^9.0.0"
   }

@@ -1,10 +1,10 @@
 {
-  "id": "80b96ced-ad77-4a9a-b758-a04e5988d093",
+  "id": "27addcdc-ed52-4764-9f58-165e658de579",
   "nested": {
-    "id": "5c7c4f59-b972-4488-b90a-4064056d6f02",
+    "id": "e83423a1-5d97-4569-ba15-31b19cf70948",
     "nonUUID": "foobar",
     "deeperNesting": {
-      "bazQuux": "5c7c4f59-b972-4488-b90a-4064056d6f02"
+      "bazQuux": "e83423a1-5d97-4569-ba15-31b19cf70948"
     }
   }
 }

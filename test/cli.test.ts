@@ -118,4 +118,112 @@ describe('cli', () => {
     expect(fs.promises.writeFile).not.toBeCalled()
     expect(processStdoutWriteSpy).toHaveBeenCalledWith(JSON.stringify(value, null, 2))
   })
+
+  test('should not write to stdout if `quiet` flag passed', async () => {
+    const file = 'test.json'
+    const value = { foo: 42 };
+
+    (minimist as MockedFunction<typeof minimist>).mockReturnValue({ _: [], file, quiet: true });
+    (cloak as MockedFunction<typeof cloak>).mockReturnValue(value);
+    (path.resolve as MockedFunction<typeof path.resolve>).mockReturnValue(file);
+    const processStdoutWriteSpy = vi.spyOn(process.stdout, 'write')
+
+    await main()
+
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    await new Promise(process.nextTick)
+
+    expect(cloak).toBeCalled()
+    expect(fs.promises.writeFile).not.toBeCalled()
+    expect(processStdoutWriteSpy).not.toBeCalled()
+  })
+
+  test('should handle multiple files passed separately', async () => {
+    (minimist as MockedFunction<typeof minimist>).mockReturnValue({ _: [], i: true, file: ['test.json', 'foo.json']  });
+
+    await main()
+
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    await new Promise(process.nextTick)
+
+    // test.json, foo.json
+    expect(fs.promises.writeFile).toBeCalledTimes(2)
+  })
+
+  test('should resolve glob patterns', async () => {
+    const pattern = 'test/*.json';
+
+    (minimist as MockedFunction<typeof minimist>).mockReturnValue({ _: [], pattern  });
+
+    await main()
+
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    await new Promise(process.nextTick)
+
+    // test.json, foo.json
+    expect(fs.promises.writeFile).toBeCalledTimes(2)
+  })
+
+  test('should only write transformed file names to stdout if multiple files passed', async () => {
+    const pattern = 'test/*.json';
+
+    (minimist as MockedFunction<typeof minimist>).mockReturnValue({ _: [], pattern  });
+    const processStdoutWriteSpy = vi.spyOn(process.stdout, 'write')
+
+    await main()
+
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    await new Promise(process.nextTick)
+
+    expect(fs.promises.writeFile).toBeCalledTimes(2)
+
+    expect(processStdoutWriteSpy).toBeCalledTimes(2)
+    expect(processStdoutWriteSpy.mock.calls).toEqual([
+      ["Transforming file test/test.json...\n"],
+      ["Transforming file test/foo.json...\n"]
+    ])
+  })
+
+  test('should forbid using -k flag along with glob pattern', async () => {
+    const pattern = 'test/*.json';
+
+    (minimist as MockedFunction<typeof minimist>).mockReturnValue({ _: [], pattern, k: true  });
+
+    const errorMessage = `Error: Glob pattern option is incompatible with key display option. Aborting operation.`
+
+    try {
+      await main()
+    } catch(err) {
+      expect((err as Error).message).toEqual(errorMessage)
+    }
+  })
+
+  test('should deduplicate files', async () => {
+    const pattern = 'test/*.json';
+    const file = 'test/test.json';
+
+    (minimist as MockedFunction<typeof minimist>).mockReturnValue({ _: [], pattern, file  });
+
+    await main()
+
+    // eslint-disable-next-line @typescript-eslint/unbound-method
+    await new Promise(process.nextTick)
+
+    // test.json, foo.json
+    expect(fs.promises.writeFile).toBeCalledTimes(2)
+  })
+
+  test('should forbid using -k flag along with multiple files', async () => {
+    const files = ['test.json', 'foo.json'];
+
+    (minimist as MockedFunction<typeof minimist>).mockReturnValue({ _: [], file: files, k: true  });
+
+    const errorMessage = `Error: Keys can only be displayed for a single file at a time. Aborting operation.`
+
+    try {
+      await main()
+    } catch(err) {
+      expect((err as Error).message).toEqual(errorMessage)
+    }
+  })
 })

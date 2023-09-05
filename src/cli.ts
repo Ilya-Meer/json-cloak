@@ -130,19 +130,19 @@ export function validateArguments(parsedArgs: ParsedArgs): Args {
   if (args.shouldDisplayKeys) {
     // -k, --keys is incompatible with updating file in place
     if (args.shouldReplaceFile) {
-      throw new Error('The provided options will overwrite file with replaced keys. Aborting operation.')
+      throw new Error('Error: The provided options will overwrite file with replaced keys. Aborting operation.')
     }
 
     // -k, --keys is incompatible with operating on multiple files
     const globPattern = Boolean(parsedArgs.p || parsedArgs.pattern)
     if (globPattern) {
-      throw new Error('Glob pattern option is incompatible with key display option. Aborting operation.')
+      throw new Error('Error: Glob pattern option is incompatible with key display option. Aborting operation.')
     }
 
     // -k, --keys is incompatible with operating on multiple files
     const file = (parsedArgs.f || parsedArgs.file) as string | string[]
     if (Array.isArray(file)) {
-      throw new Error('Keys can only be displayed for a single file at a time')
+      throw new Error('Error: Keys can only be displayed for a single file at a time. Aborting operation.')
     }
   }
 
@@ -168,7 +168,7 @@ export function resolveFileList(rawArgs: ParsedArgs): string[] {
   let fileList: string[] = []
 
   if (!isValidFileReference(files) && !isValidFileReference(globs)) {
-    throw new Error('At least one of `-f, --file` or `-p, --pattern` must be provided.')
+    throw new Error('Error: At least one of `-f, --file` or `-p, --pattern` must be provided.')
   }
 
   if (isValidFileReference(files)) {
@@ -197,7 +197,7 @@ export async function getVersion(): Promise<string> {
     const content = await getFileContents(pkgPath)
     return (JSON.parse(content) as { version: string }).version
   } catch (err: unknown) {
-    const errorMessage = `Error retrieving package version: ${(err as Error).message}`
+    const errorMessage = `Error: Error retrieving package version: ${(err as Error).message}`
     throw new Error(errorMessage)
   }
 }
@@ -235,7 +235,7 @@ export async function transformJSON({
 
     process.stdout.write(transformedContent)
   } catch (err: unknown) {
-    const errorMessage = `Error retrieving package version: ${(err as Error).message}`
+    const errorMessage = `Error: Error retrieving package version: ${(err as Error).message}`
     throw new Error(errorMessage)
   }
 }

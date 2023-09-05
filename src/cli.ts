@@ -179,7 +179,7 @@ export function resolveFileList(rawArgs: ParsedArgs): string[] {
   if (isValidFileReference(globs)) {
     // get files from glob patterns
     for (const pattern of ([] as string[]).concat(globs as string | string[])) {
-      const resolvedFiles: string[] = globSync(pattern, { cwd: process.cwd(), ignore: 'node_modules/**' }) // eslint-disable-line
+      const resolvedFiles: string[] = globSync(pattern, { cwd: process.cwd(), ignore: 'node_modules/**' })
       fileList.push(...resolvedFiles)
     }
   }

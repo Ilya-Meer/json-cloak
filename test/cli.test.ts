@@ -1,42 +1,52 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import minimist from 'minimist'
+import { describe, afterEach, test, expect, vi, MockedFunction } from 'vitest'
 import { usage, main, getVersion } from '../src/cli'
 import { cloak } from '../src/index'
 
-jest.mock('minimist')
+vi.mock('minimist')
 
-jest.mock('../src/index', () => ({
-  cloak: jest.fn()
+vi.mock('../src/index', () => ({
+  cloak: vi.fn()
 }))
 
-// eslint-disable-next-line
-jest.mock('../src/cli', () => ({
-  ...jest.requireActual('../src/cli'),
-  getVersion: jest.fn(),
-  parseArguments: jest.fn(),
-}))
+vi.mock('../src/cli', async (importOriginal) => {
+  const mod = await importOriginal()
+  // eslint-disable-next-line
+  return {
+    // eslint-disable-next-line
+    // @ts-ignore
+    ...mod,
+    getVersion: vi.fn(),
+    parseArguments: vi.fn(),
+  }
+})
 
-jest.mock('node:fs', () => ({
-  promises: {
-    readFile: jest.fn(),
-    writeFile: jest.fn(),
+vi.mock('node:fs', () => ({
+  default: {
+    promises: {
+      readFile: vi.fn(),
+      writeFile: vi.fn(),
+    }
   },
 }))
 
-jest.mock('node:path', () => ({
-  join: jest.fn(),
-  resolve: jest.fn(),
+vi.mock('node:path', () => ({
+  default: {
+    join: vi.fn(),
+    resolve: vi.fn(),
+  },
 }))
 
 describe('cli', () => {
   afterEach(() => {
-    jest.clearAllMocks()
+    vi.clearAllMocks()
   })
 
   test('should display help message when no options provided', async () => {
-    (minimist as jest.MockedFn<typeof minimist>).mockReturnValue({ _: [] })
-    const processStdoutWriteSpy = jest.spyOn(process.stdout, 'write')
+    (minimist as MockedFunction<typeof minimist>).mockReturnValue({ _: [] })
+    const processStdoutWriteSpy = vi.spyOn(process.stdout, 'write')
 
     // Call main with no options
     await main()
@@ -47,11 +57,11 @@ describe('cli', () => {
   test('should display version message when version flag provided', async () => {
     const version = '{ "version": "1.0.0" }';
 
-    (minimist as jest.MockedFn<typeof minimist>).mockReturnValue({ _: [], version: true });
-    (getVersion as jest.MockedFn<typeof getVersion>).mockResolvedValue(version);
-    (fs.promises.readFile as jest.MockedFn<typeof fs.promises.readFile>).mockResolvedValue(version)
+    (minimist as MockedFunction<typeof minimist>).mockReturnValue({ _: [], version: true });
+    (getVersion as MockedFunction<typeof getVersion>).mockResolvedValue(version);
+    (fs.promises.readFile as MockedFunction<typeof fs.promises.readFile>).mockResolvedValue(version)
 
-    const processStdoutWriteSpy = jest.spyOn(process.stdout, 'write')
+    const processStdoutWriteSpy = vi.spyOn(process.stdout, 'write')
 
     // Call main with no options
     await main()
@@ -60,7 +70,7 @@ describe('cli', () => {
   })
 
   test('should throw an error if called with unsupported arguments', async () => {
-    (minimist as jest.MockedFn<typeof minimist>).mockReturnValue({ _: [], testArg: 'testVal' });
+    (minimist as MockedFunction<typeof minimist>).mockReturnValue({ _: [], testArg: 'testVal' });
 
     const errorMessage = `Error: Unsupported arguments: testArg`
 
@@ -75,10 +85,10 @@ describe('cli', () => {
     const file = 'test.json'
     const value = { foo: 42 };
 
-    (minimist as jest.MockedFn<typeof minimist>).mockReturnValue({ _: [], file, i: true });
-    (cloak as jest.MockedFn<typeof cloak>).mockReturnValue(value);
-    (path.resolve as jest.MockedFn<typeof path.resolve>).mockReturnValue(file);
-    const processStdoutWriteSpy = jest.spyOn(process.stdout, 'write')
+    (minimist as MockedFunction<typeof minimist>).mockReturnValue({ _: [], file, i: true });
+    (cloak as MockedFunction<typeof cloak>).mockReturnValue(value);
+    (path.resolve as MockedFunction<typeof path.resolve>).mockReturnValue(file);
+    const processStdoutWriteSpy = vi.spyOn(process.stdout, 'write')
 
     await main()
 
@@ -94,10 +104,10 @@ describe('cli', () => {
     const file = 'test.json'
     const value = { foo: 42 };
 
-    (minimist as jest.MockedFn<typeof minimist>).mockReturnValue({ _: [], file });
-    (cloak as jest.MockedFn<typeof cloak>).mockReturnValue(value);
-    (path.resolve as jest.MockedFn<typeof path.resolve>).mockReturnValue(file);
-    const processStdoutWriteSpy = jest.spyOn(process.stdout, 'write')
+    (minimist as MockedFunction<typeof minimist>).mockReturnValue({ _: [], file });
+    (cloak as MockedFunction<typeof cloak>).mockReturnValue(value);
+    (path.resolve as MockedFunction<typeof path.resolve>).mockReturnValue(file);
+    const processStdoutWriteSpy = vi.spyOn(process.stdout, 'write')
 
     await main()
 

@@ -4,6 +4,7 @@ import minimist from 'minimist'
 import { describe, afterEach, test, expect, vi, MockedFunction } from 'vitest'
 import { usage, main, getVersion } from '../src/cli'
 import { cloak } from '../src/index'
+import { errors, formatError } from '../src/errors'
 
 vi.mock('minimist')
 
@@ -72,7 +73,7 @@ describe('cli', () => {
   test('should throw an error if called with unsupported arguments', async () => {
     (minimist as MockedFunction<typeof minimist>).mockReturnValue({ _: [], testArg: 'testVal' });
 
-    const errorMessage = `Error: Unsupported arguments: testArg`
+    const errorMessage = formatError(errors.UNSUPPORTED_ARGS_ERROR, 'testArg', '.')
 
     try {
       await main()
@@ -189,12 +190,10 @@ describe('cli', () => {
 
     (minimist as MockedFunction<typeof minimist>).mockReturnValue({ _: [], pattern, k: true  });
 
-    const errorMessage = `Error: Glob pattern option is incompatible with key display option. Aborting operation.`
-
     try {
       await main()
     } catch(err) {
-      expect((err as Error).message).toEqual(errorMessage)
+      expect((err as Error).message).toEqual(formatError(errors.KEY_GLOB_CONFLICT_ERROR))
     }
   })
 
@@ -218,12 +217,10 @@ describe('cli', () => {
 
     (minimist as MockedFunction<typeof minimist>).mockReturnValue({ _: [], file: files, k: true  });
 
-    const errorMessage = `Error: Keys can only be displayed for a single file at a time. Aborting operation.`
-
     try {
       await main()
     } catch(err) {
-      expect((err as Error).message).toEqual(errorMessage)
+      expect((err as Error).message).toEqual(formatError(errors.KEY_MULTIPLE_FILE_ERROR))
     }
   })
 })

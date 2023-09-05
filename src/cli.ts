@@ -2,6 +2,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import minimist, { ParsedArgs } from 'minimist'
 import { globSync } from 'glob'
+import { errors, formatError } from './errors'
 import { cloak } from '.'
 
 interface Args {
@@ -103,7 +104,7 @@ export function parseArguments(): ParsedArgs {
   const unsupportedOptions = Object.keys(args).filter((option) => !supportedOptions.includes(option) && option !== '_')
 
   if (unsupportedOptions.length > 0) {
-    const errorMessage = `Error: Unsupported arguments: ${unsupportedOptions.join(', ')}`
+    const errorMessage = formatError(errors.UNSUPPORTED_ARGS_ERROR, unsupportedOptions.join(', '), '.')
     throw new Error(errorMessage)
   }
 
@@ -130,19 +131,19 @@ export function validateArguments(parsedArgs: ParsedArgs): Args {
   if (args.shouldDisplayKeys) {
     // -k, --keys is incompatible with updating file in place
     if (args.shouldReplaceFile) {
-      throw new Error('Error: The provided options will overwrite file with replaced keys. Aborting operation.')
+      throw new Error(formatError(errors.KEY_OVERWRITE_ERROR))
     }
 
     // -k, --keys is incompatible with operating on multiple files
     const globPattern = Boolean(parsedArgs.p || parsedArgs.pattern)
     if (globPattern) {
-      throw new Error('Error: Glob pattern option is incompatible with key display option. Aborting operation.')
+      throw new Error(formatError(errors.KEY_GLOB_CONFLICT_ERROR))
     }
 
     // -k, --keys is incompatible with operating on multiple files
     const file = (parsedArgs.f || parsedArgs.file) as string | string[]
     if (Array.isArray(file)) {
-      throw new Error('Error: Keys can only be displayed for a single file at a time. Aborting operation.')
+      throw new Error(formatError(errors.KEY_MULTIPLE_FILE_ERROR))
     }
   }
 
@@ -168,7 +169,7 @@ export function resolveFileList(rawArgs: ParsedArgs): string[] {
   let fileList: string[] = []
 
   if (!isValidFileReference(files) && !isValidFileReference(globs)) {
-    throw new Error('Error: At least one of `-f, --file` or `-p, --pattern` must be provided.')
+    throw new Error(formatError(errors.MISSING_FILE_ARG_ERROR))
   }
 
   if (isValidFileReference(files)) {
@@ -197,7 +198,7 @@ export async function getVersion(): Promise<string> {
     const content = await getFileContents(pkgPath)
     return (JSON.parse(content) as { version: string }).version
   } catch (err: unknown) {
-    const errorMessage = `Error: Error retrieving package version: ${(err as Error).message}`
+    const errorMessage = formatError(errors.PACKAGE_VERSION_ERROR, (err as Error).message, '.')
     throw new Error(errorMessage)
   }
 }
@@ -235,7 +236,7 @@ export async function transformJSON({
 
     process.stdout.write(transformedContent)
   } catch (err: unknown) {
-    const errorMessage = `Error: Error retrieving package version: ${(err as Error).message}`
+    const errorMessage = formatError(errors.TRANSFORM_ERROR, (err as Error).message, '.')
     throw new Error(errorMessage)
   }
 }

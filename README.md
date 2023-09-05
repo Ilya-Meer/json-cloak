@@ -32,11 +32,13 @@ cloak [options]
 
 #### Options
 
-- `-f, --file`: Specify the JSON file to transform.
+- `-f, --file`:     Specify the JSON file to transform.
 - `-i, --in-place`: Update the file in place with the transformed JSON object.
-- `-k, --keys`: Display the replaced keys instead of printing the transformed JSON object.
-- `-v, --version`: Display the version number.
-- `-h, --help`: Show the help message.
+- `-k, --keys`:     Display the replaced keys instead of printing the transformed JSON object.
+- `-v, --version`:  Display the version number.
+- `-p, --pattern`:  Specify a glob pattern to operate on multiple files. This will perform updates **in place**!
+- `-q, --quiet`:    Don't print to stdout
+- `-h, --help`:     Show the help message.
 
 #### Examples
 
@@ -52,7 +54,12 @@ cloak -i -f data.json
 cloak -k -f data.json
 ```
 
-3. Display version info:
+3. Use a glob pattern to transform multiple files (**in place transformation only**):
+```bash
+cloak -p 'test/*.json' -f other/dir/foo.json
+```
+
+4. Display version info:
 
 ```bash
 cloak -v
@@ -63,7 +70,6 @@ cloak -v
 In addition to being used as a CLI, `json-cloak` can also be used inside JavaScript projects to transform individual JSON objects. Use either as CommonJS or ES6 module.
 
 ### Installation
-
 
 ```bash
 npm install json-cloak
